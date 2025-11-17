@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>SIBUR QUIZ BATTLE · v0.4 UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --sibur-teal: #009CA6;
+      --sibur-teal-dark: #006D73;
+      --bg-light: #F5F7F8;
+      --text-main: #001F23;
+      --gray-soft: #E6E6E6;
+      --danger: #D94747;
+      --success: #36A766;
+      --radius-lg: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #E2F5F6 0, #F7FAFB 55%, #EDF3F4 100%);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      background: linear-gradient(160deg, #ffffff 0%, #f3fbfc 40%, #e7f5f6 100%);
+      box-shadow: 0 18px 40px rgba(0, 50, 60, 0.18);
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header.app-header {
+      padding: 16px 20px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, var(--sibur-teal-dark), var(--sibur-teal));
+      color: white;
+    }
+
+    .header-logo {
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      font-size: 16px;
+    }
+
+    .header-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    main {
+      flex: 1;
+      padding: 18px 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      height: 100%;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+
+    .screen.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      box-shadow: 0 10px 24px rgba(0, 40, 50, 0.08);
+      animation: card-pop 0.3s ease;
+    }
+
+    .card-hero {
+      background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.98), rgba(212, 244, 246, 0.95));
+      padding: 18px 18px 20px;
+    }
+
+    @keyframes card-pop {
+      from { opacity: 0; transform: translateY(8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--gray-soft);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: none;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease, background 0.1s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.4), transparent 55%);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .btn:active::after { opacity: 1; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--sibur-teal), var(--sibur-teal-dark));
+      color: white;
+      box-shadow: 0 10px 22px rgba(0, 80, 90, 0.35);
+    }
+
+    .btn-secondary {
+      background: white;
+      border: 1px solid var(--gray-soft);
+      color: var(--sibur-teal-dark);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px dashed var(--gray-soft);
+      color: var(--sibur-teal-dark);
+    }
+
+    .btn:active {
+      transform: scale(0.97) translateY(1px);
+      box-shadow: 0 6px 16px rgba(0, 60, 70, 0.2);
+      filter: brightness(0.98);
+    }
+
+    .btn-row { display: flex; gap: 10px; }
+    .btn-small { padding-block: 8px; font-size: 13px; }
+
+    .profile-row { display: flex; gap: 12px; align-items: center; }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffffff, #DEF3F5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--sibur-teal-dark);
+      border: 2px solid rgba(0, 156, 166, 0.18);
+      box-shadow: 0 4px 10px rgba(0, 80, 90, 0.18);
+    }
+
+    .profile-meta { font-size: 12px; opacity: 0.7; }
+
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 156, 166, 0.15);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip span.icon { font-size: 14px; }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .menu-item {
+      border-radius: var(--radius-lg);
+      background: white;
+      padding: 10px 11px;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 10px rgba(0, 40, 50, 0.04);
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.1s ease;
+    }
+
+    .menu-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(0, 40, 50, 0.08);
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    .menu-item-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .menu-item-subtitle { font-size: 11px; opacity: 0.7; line-height: 1.4; }
+
+    .menu-pill {
+      font-size: 10px;
+      margin-top: 6px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(0, 156, 166, 0.08);
+      color: var(--sibur-teal-dark);
+      display: inline-block;
+    }
+
+    .footer-info {
+      text-align: center;
+      font-size: 11px;
+      opacity: 0.7;
+      line-height: 1.4;
+    }
+
+    .duel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .versus-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .vs-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.7;
+    }
+
+    .score-chip {
+      font-size: 13px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    .timer-bar {
+      position: relative;
+      width: 100%;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .timer-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--sibur-teal), #F7C948);
+      transform-origin: left;
+      transform: scaleX(1);
+      transition: transform 0.1s linear;
+    }
+
+    .question-text {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .question-meta {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 10px;
+    }
+
+    .answers { display: flex; flex-direction: column; gap: 8px; }
+
+    .answer-btn {
+      width: 100%;
+      border-radius: 999px;
+      padding: 9px 12px;
+      border: 1px solid var(--gray-soft);
+      background: rgba(255, 255, 255, 0.98);
+      text-align: left;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: background 0.1s ease, border-color 0.1s ease, transform 0.06s ease, box-shadow 0.06s ease;
+    }
+
+    .answer-btn span.index {
+      font-weight: 600;
+      font-size: 11px;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.05);
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .answer-btn span.text { flex: 1; }
+
+    .answer-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0, 40, 50, 0.06);
+    }
+
+    .answer-btn.correct {
+      background: rgba(54, 167, 102, 0.11);
+      border-color: rgba(54, 167, 102, 0.7);
+      animation: answer-pop 0.25s ease;
+    }
+
+    .answer-btn.wrong {
+      background: rgba(217, 71, 71, 0.09);
+      border-color: rgba(217, 71, 71, 0.7);
+      animation: answer-shake 0.25s ease;
+    }
+
+    .answer-btn.disabled { opacity: 0.75; cursor: default; }
+
+    @keyframes answer-pop {
+      0% { transform: scale(0.98); }
+      60% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes answer-shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      50% { transform: translateX(3px); }
+      75% { transform: translateX(-2px); }
+      100% { transform: translateX(0); }
+    }
+
+    .small-label { font-size: 11px; opacity: 0.7; }
+
+    .result-main-score {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .result-status {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .result-delta { font-size: 12px; opacity: 0.8; }
+
+    .list { display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+    .list-item { display: flex; justify-content: space-between; align-items: center; }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .badge-card {
+      border-radius: var(--radius-lg);
+      padding: 9px 10px;
+      background: white;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      box-shadow: 0 4px 10px rgba(0, 40, 50, 0.04);
+    }
+
+    .badge-pill {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(0, 156, 166, 0.09);
+      align-self: flex-start;
+    }
+
+    .badge-card.locked { opacity: 0.55; }
+
+    .pill-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.04);
+      font-size: 11px;
+    }
+
+    .leader-header-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      opacity: 0.7;
+      margin-bottom: 6px;
+    }
+
+    .leader-list { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+
+    .leader-row {
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .leader-row.me { background: rgba(0, 156, 166, 0.08); font-weight: 600; }
+    .leader-pos { text-align: center; font-size: 12px; opacity: 0.7; }
+
+    .leader-name { display: flex; flex-direction: column; }
+    .leader-name-main { font-size: 13px; }
+    .leader-name-sub { font-size: 11px; opacity: 0.7; }
+
+    .leader-score { font-size: 12px; text-align: right; }
+
+    @media (max-width: 520px) {
+      .app { border-radius: 0; max-width: none; min-height: 100vh; }
+      header.app-header { border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <div class="header-logo">SIBUR QUIZ</div>
+    <div class="header-badge">Мерч-батл</div>
+  </header>
+
+  <main>
+    <!-- Splash / Login -->
+    <section class="screen active" id="screen-splash">
+      <div class="card card-hero">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Добро пожаловать!</div>
+            <div class="card-subtitle">
+              Квиз-дуэли по ценностям, безопасности и инновациям СИБУРа.
+              Играешь — поднимаешь рейтинг и соревнуешься с коллегами.
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 12px; font-size: 12px; display: flex; flex-direction: column; gap: 4px;">
+          <span>⚡ Дуэль — около 40–60 секунд (больше времени на ответ)</span>
+          <span>🏅 Рейтинг за каждую сыгранную дуэль</span>
+          <span>🧠 Узнаёшь больше о компании без “учебника”</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Вход</div>
+        <p style="font-size: 13px; opacity: 0.8; margin-bottom: 10px;">
+          Введите имя — и сразу в бой. В прод-версии здесь будет корпоративная SSO.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <input id="input-name" type="text" placeholder="Ваше имя и фамилия"
+                 style="padding:9px 10px;border-radius:999px;border:1px solid var(--gray-soft);font-size:14px;width:100%;outline:none;">
+          <button class="btn btn-primary" id="btn-enter">Войти в игру</button>
+          <button class="btn btn-ghost btn-small" id="btn-demo-name">Заполнить демо-именем</button>
+        </div>
+      </div>
+
+      <div class="footer-info">
+        Прототип 0.4 · Без сохранения данных · Работает прямо из файла .html
+      </div>
+    </section>
+
+    <!-- Main menu -->
+    <section class="screen" id="screen-main">
+      <div class="card card-hero">
+        <div class="profile-row">
+          <div class="avatar" id="player-avatar">S</div>
+          <div>
+            <div id="player-name" style="font-weight: 700;">Сотрудник СИБУР</div>
+            <div class="profile-meta" id="player-meta">Рейтинг: 100 · Дуэлей: 0</div>
+            <div class="stats-row">
+              <div class="chip">
+                <span class="icon">🏅</span><span id="player-rating-label">Новичок</span>
+              </div>
+              <div class="chip">
+                <span class="icon">🎯</span><span id="player-battles-label">0 дуэлей</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Быстрая дуэль</div>
+        <p class="card-subtitle">
+          5 вопросов по ценностям СИБУРа, безопасности, технологиям и экологии.
+          Побеждает тот, кто отвечает быстрее и точнее.
+        </p>
+        <div style="margin-top: 10px; display:flex; flex-direction:column; gap:8px;">
+          <button class="btn btn-primary" id="btn-play-quick">Играть дуэль</button>
+          <button class="btn btn-secondary btn-small" id="btn-play-bot">Тренировка с ИИ-соперником</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Ваши активности</div>
+        <div class="menu-grid">
+          <div class="menu-item" id="menu-leaderboard">
+            <div class="menu-item-title">Рейтинг участников</div>
+            <div class="menu-item-subtitle">Сравните свой рейтинг с коллегами в демо-лидерборде.</div>
+            <div class="menu-pill">🏆 Лидерборд</div>
+          </div>
+          <div class="menu-item" id="menu-badges">
+            <div class="menu-item-title">Бейджи ценностей</div>
+            <div class="menu-item-subtitle">“Знаток безопасности”, “Инноватор” и другие звания.</div>
+            <div class="menu-pill">⭐ Коллекция</div>
+          </div>
+          <div class="menu-item" id="menu-stats">
+            <div class="menu-item-title">Статистика</div>
+            <div class="menu-item-subtitle">Победы, поражения и сильные категории вопросов.</div>
+            <div class="menu-pill">📊 В прототипе заглушка</div>
+          </div>
+          <div class="menu-item" id="menu-settings">
+            <div class="menu-item-title">Настройки</div>
+            <div class="menu-item-subtitle">Аватар, уведомления, язык интерфейса.</div>
+            <div class="menu-pill">⚙️ В прототипе заглушка</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-info">
+        Совет: сыграйте 3 дуэли подряд, а затем откройте “Рейтинг участников”.
+      </div>
+    </section>
+
+    <!-- Duel screen -->
+    <section class="screen" id="screen-duel">
+      <div class="card">
+        <div class="duel-header">
+          <span class="small-label" id="duel-mode-label">Режим: Быстрая дуэль</span>
+          <span class="small-label" id="duel-progress-label">Вопрос 1 / 5</span>
+        </div>
+
+        <div class="versus-row">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="avatar" style="width:34px;height:34px;font-size:14px;" id="duel-player-avatar">P</div>
+            <div style="font-size:12px;">
+              <div id="duel-player-name" style="font-weight:600;">Вы</div>
+              <div style="opacity:0.7;">Рейтинг: <span id="duel-player-rating">100</span></div>
+            </div>
+          </div>
+          <div style="text-align:center;">
+            <div class="vs-label">Дуэль</div>
+            <div class="score-chip" id="duel-score-label">0 : 0</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;">
+            <div style="font-size:12px;text-align:right;">
+              <div id="duel-opponent-name" style="font-weight:600;">Соперник</div>
+              <div style="opacity:0.7;">Рейтинг: <span id="duel-opponent-rating">100</span></div>
+            </div>
+            <div class="avatar" style="width:34px;height:34px;font-size:14px;background:linear-gradient(135deg,#ffffff,#FFE1B2);border-color:rgba(249,180,59,0.5);" id="duel-opponent-avatar">
+              R
+            </div>
+          </div>
+        </div>
+
+        <div class="timer-bar">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+
+        <div class="question-text" id="question-text">Вопрос появится здесь.</div>
+        <div class="question-meta" id="question-meta">Категория: —</div>
+
+        <div class="answers" id="answers-container"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Подсказка</div>
+        <p style="font-size:12px;opacity:0.8;" id="duel-hint">
+          В этом прототипе соперник — простой бот. В боевой версии можно будет играть с коллегами по сети.
+        </p>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-small" id="btn-duel-exit">Выйти</button>
+        <button class="btn btn-ghost btn-small" id="btn-duel-skip">Завершить раунд</button>
+      </div>
+    </section>
+
+    <!-- Result screen -->
+    <section class="screen" id="screen-result">
+      <div class="card card-hero">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Результат дуэли</div>
+            <div class="card-subtitle" id="result-subtitle">
+              Хорошая игра! С каждой дуэлью вы лучше знаете компанию.
+            </div>
+          </div>
+          <div class="pill" id="result-mode-pill">Быстрая дуэль</div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div class="result-main-score" id="result-score">3 : 2</div>
+          <div class="result-status" id="result-status-label">Победа 🎉</div>
+          <div class="result-delta" id="result-delta-label">Рейтинг: +15 · Дуэлей: +1</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Прогресс (сбросится при закрытии файла)</div>
+        <div class="list">
+          <div class="list-item">
+            <span>Текущий рейтинг</span>
+            <span class="pill-inline">🏅 <span id="result-rating-value">115</span></span>
+          </div>
+          <div class="list-item">
+            <span>Всего дуэлей</span>
+            <span class="pill-inline">⚔️ <span id="result-battles-value">1</span></span>
+          </div>
+          <div class="list-item">
+            <span>Победы / поражения</span>
+            <span class="pill-inline">🎯 <span id="result-wl-value">1 / 0 / 0</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-result-again">Сыграть ещё дуэль</button>
+        <button class="btn btn-secondary" id="btn-result-main">В главное меню</button>
+      </div>
+    </section>
+
+    <!-- Badges screen -->
+    <section class="screen" id="screen-badges">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Бейджи ценностей</div>
+            <div class="card-subtitle">Открывайте звания за рейтинг и участие в дуэлях.</div>
+          </div>
+          <div class="pill-inline">
+            ⭐ <span id="badges-count-label">0 из 5</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="badge-grid" id="badge-grid"></div>
+      </div>
+
+      <button class="btn btn-secondary" id="btn-badges-back">Назад в меню</button>
+    </section>
+
+    <!-- Leaderboard screen -->
+    <section class="screen" id="screen-leaderboard">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Рейтинг участников</div>
+            <div class="card-subtitle">
+              Демо-лидерборд: как будто играют сотрудники из разных функций.
+              Ваше место пересчитывается после каждой дуэли.
+            </div>
+          </div>
+          <div class="pill-inline">
+            🏆 <span id="leaderboard-me-rating">Рейтинг: 100</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="leader-header-row">
+          <span>Место</span>
+          <span>Имя</span>
+          <span>Рейтинг</span>
+        </div>
+        <div class="leader-list" id="leaderboard-list"></div>
+      </div>
+
+      <button class="btn btn-secondary" id="btn-leaderboard-back">Назад в меню</button>
+    </section>
+  </main>
+</div>
+
+<script>
+  const questionBank = [
+    {
+      text: "Какая ценность СИБУРа означает приоритет предотвращения инцидентов и охраны труда?",
+      category: "Безопасность",
+      options: [
+        "Эффективность и экономия ресурсов",
+        "Безопасность и ответственность",
+        "Командная работа",
+        "Клиентский сервис"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Что из перечисленного лучше всего отражает курс СИБУРа на устойчивое развитие?",
+      category: "Экология и устойчивость",
+      options: [
+        "Увеличение объёмов любых видов производства",
+        "Отказ от цифровизации",
+        "Переработка полимеров и снижение выбросов",
+        "Сокращение обучения сотрудников"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Что в большей степени соответствует инновациям на производстве?",
+      category: "Инновации",
+      options: [
+        "Сохранение всех процессов без изменений",
+        "Использование современных цифровых систем мониторинга",
+        "Запрет на предложения по улучшениям",
+        "Сокрытие инцидентов"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Что является примером командной работы на предприятии?",
+      category: "Командность",
+      options: [
+        "Игнорирование обратной связи коллег",
+        "Совместное решение проблем между цехами",
+        "Сокрытие информации",
+        "Работа только по принципу «моя смена — мои задачи»"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Что нужно сделать в первую очередь при обнаружении потенциально опасной ситуации?",
+      category: "Безопасность",
+      options: [
+        "Сделать фото для соцсетей",
+        "Самостоятельно устранить, нарушая инструкции",
+        "Сообщить по установленному каналу и принять безопасные меры",
+        "Ничего не делать, инциденты — норма"
+      ],
+      correctIndex: 2
+    },
+    {
+      text: "Какой подход помогает снижать отходы производства?",
+      category: "Экология и устойчивость",
+      options: [
+        "Игнорирование возможностей переработки",
+        "Системная работа по повторному использованию и переработке",
+        "Увеличение объёма упаковки",
+        "Отказ от учёта отходов"
+      ],
+      correctIndex: 1
+    },
+    {
+      text: "Что чаще всего помогает находить инновации на рабочем месте?",
+      category: "Инновации",
+      options: [
+        "Обмен идеями и подача предложений по улучшениям",
+        "Запрет на обсуждение новых идей",
+        "Ожидание изменений только «сверху»",
+        "Изоляция подразделений друг от друга"
+      ],
+      correctIndex: 0
+    }
+  ];
+
+  const badgesConfig = [
+    {
+      id: "rookie",
+      title: "Новичок ценностей",
+      description: "Достигните рейтинга 120 и сыграйте 3 дуэли.",
+      condition: (player) => player.rating >= 120 && player.battles >= 3
+    },
+    {
+      id: "safety",
+      title: "Знаток безопасности",
+      description: "Ответьте правильно минимум в 5 вопросах по безопасности.",
+      condition: (player) => player.stats.safetyCorrect >= 5
+    },
+    {
+      id: "eco",
+      title: "Эко-герой",
+      description: "Ответьте правильно минимум в 5 вопросах по экологии.",
+      condition: (player) => player.stats.ecoCorrect >= 5
+    },
+    {
+      id: "innovator",
+      title: "Инноватор",
+      description: "Ответьте правильно минимум в 5 вопросах по инновациям.",
+      condition: (player) => player.stats.innovationCorrect >= 5
+    },
+    {
+      id: "duelist",
+      title: "Мастер дуэлей",
+      description: "Выиграйте 10 дуэлей.",
+      condition: (player) => player.wins >= 10
+    }
+  ];
+
+  const sampleOpponents = [
+    { name: "Ирина, лаборатория", rating: 130, initials: "ИР" },
+    { name: "Андрей, производство", rating: 145, initials: "АП" },
+    { name: "Сергей, цифровизация", rating: 160, initials: "СЦ" },
+    { name: "Мария, экология", rating: 155, initials: "МЭ" }
+  ];
+
+  const baseLeaderboard = [
+    { name: "Антон, производство", rating: 180, battles: 14, wins: 9 },
+    { name: "Марина, финансы",     rating: 165, battles: 11, wins: 7 },
+    { name: "Игорь, безопасность", rating: 150, battles: 9,  wins: 6 },
+    { name: "Ольга, HR",           rating: 135, battles: 6,  wins: 3 },
+    { name: "Дмитрий, ИТ",         rating: 120, battles: 5,  wins: 3 }
+  ];
+
+  let player = {
+    name: "Сотрудник СИБУР",
+    rating: 100,
+    battles: 0,
+    wins: 0,
+    losses: 0,
+    draws: 0,
+    stats: {
+      safetyCorrect: 0,
+      ecoCorrect: 0,
+      innovationCorrect: 0
+    },
+    badges: []
+  };
+
+  let gameState = {
+    mode: "quick",
+    opponent: null,
+    questions: [],
+    currentQuestionIndex: 0,
+    playerScore: 0,
+    opponentScore: 0,
+    timerInterval: null,
+    timerTimeout: null,
+    timerTotalMs: 10000,
+    questionAnswered: false
+  };
+
+  function $(id) { return document.getElementById(id); }
+
+  function initialsFromName(name) {
+    if (!name) return "S";
+    const parts = name.split(" ").filter(Boolean);
+    if (parts.length === 0) return name[0].toUpperCase();
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  function ratingLabel(rating) {
+    if (rating < 120) return "Новичок";
+    if (rating < 150) return "Участник";
+    if (rating < 200) return "Сильный игрок";
+    if (rating < 250) return "Эксперт";
+    return "Легенда";
+  }
+
+  function battlesLabel(battles) {
+    if (battles === 0) return "0 дуэлей";
+    if (battles === 1) return "1 дуэль";
+    if (battles < 5) return battles + " дуэли";
+    return battles + " дуэлей";
+  }
+
+  function switchScreen(id) {
+    document.querySelectorAll(".screen").forEach(el => {
+      el.classList.toggle("active", el.id === id);
+    });
+  }
+
+  function shuffle(array) {
+    const arr = array.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function updateMainScreen() {
+    $("player-name").textContent = player.name;
+    $("player-avatar").textContent = initialsFromName(player.name);
+    $("player-meta").textContent = `Рейтинг: ${player.rating} · Дуэлей: ${player.battles}`;
+    $("player-rating-label").textContent = ratingLabel(player.rating);
+    $("player-battles-label").textContent = battlesLabel(player.battles);
+  }
+
+  function updateBadgesFromPlayer() {
+    const unlockedIds = [];
+    badgesConfig.forEach(b => {
+      if (b.condition(player)) {
+        unlockedIds.push(b.id);
+      }
+    });
+    player.badges = unlockedIds;
+  }
+
+  function renderBadges() {
+    updateBadgesFromPlayer();
+    const container = $("badge-grid");
+    container.innerHTML = "";
+    const unlockedSet = new Set(player.badges);
+
+    badgesConfig.forEach(badge => {
+      const card = document.createElement("div");
+      const unlocked = unlockedSet.has(badge.id);
+      card.className = "badge-card" + (unlocked ? "" : " locked");
+
+      const title = document.createElement("div");
+      title.textContent = badge.title;
+      title.style.fontWeight = "600";
+      card.appendChild(title);
+
+      const desc = document.createElement("div");
+      desc.textContent = badge.description;
+      desc.style.fontSize = "11px";
+      desc.style.opacity = "0.8";
+      card.appendChild(desc);
+
+      const pill = document.createElement("div");
+      pill.className = "badge-pill";
+      pill.textContent = unlocked ? "Открыто" : "Пока закрыто";
+      card.appendChild(pill);
+
+      container.appendChild(card);
+    });
+
+    $("badges-count-label").textContent = `${player.badges.length} из ${badgesConfig.length}`;
+  }
+
+  function renderLeaderboard() {
+    const players = baseLeaderboard.map(p => ({ ...p }));
+    const meIndex = players.findIndex(p => p.name === player.name || p.name.startsWith(player.name + " "));
+    const meData = {
+      name: player.name + " (вы)",
+      rating: player.rating,
+      battles: player.battles,
+      wins: player.wins
+    };
+
+    if (meIndex >= 0) {
+      players[meIndex] = meData;
+    } else {
+      players.push(meData);
+    }
+
+    players.sort((a, b) => b.rating - a.rating);
+
+    const container = $("leaderboard-list");
+    container.innerHTML = "";
+
+    players.forEach((p, idx) => {
+      const row = document.createElement("div");
+      const isMe = p.name.includes("(вы)");
+      row.className = "leader-row" + (isMe ? " me" : "");
+
+      const pos = document.createElement("div");
+      pos.className = "leader-pos";
+      pos.textContent = idx + 1;
+      row.appendChild(pos);
+
+      const nameCol = document.createElement("div");
+      nameCol.className = "leader-name";
+      const main = document.createElement("div");
+      main.className = "leader-name-main";
+      main.textContent = p.name;
+      const sub = document.createElement("div");
+      sub.className = "leader-name-sub";
+      sub.textContent = `Дуэлей: ${p.battles || 0}, побед: ${p.wins || 0}`;
+      nameCol.appendChild(main);
+      nameCol.appendChild(sub);
+      row.appendChild(nameCol);
+
+      const score = document.createElement("div");
+      score.className = "leader-score";
+      score.textContent = p.rating;
+      row.appendChild(score);
+
+      container.appendChild(row);
+    });
+
+    $("leaderboard-me-rating").textContent = `Рейтинг: ${player.rating}`;
+  }
+
+  function resetTimer() {
+    if (gameState.timerInterval) {
+      clearInterval(gameState.timerInterval);
+      gameState.timerInterval = null;
+    }
+    if (gameState.timerTimeout) {
+      clearTimeout(gameState.timerTimeout);
+      gameState.timerTimeout = null;
+    }
+  }
+
+  function prepareDuel(mode) {
+    gameState.mode = mode;
+    gameState.questions = shuffle(questionBank).slice(0, 5);
+    gameState.currentQuestionIndex = 0;
+    gameState.playerScore = 0;
+    gameState.opponentScore = 0;
+    gameState.questionAnswered = false;
+
+    const opp = sampleOpponents[Math.floor(Math.random() * sampleOpponents.length)];
+    gameState.opponent = {
+      name: mode === "bot" ? opp.name + " (ИИ)" : opp.name,
+      rating: opp.rating,
+      initials: opp.initials
+    };
+
+    $("duel-mode-label").textContent = mode === "bot"
+      ? "Режим: Тренировка с ИИ-соперником"
+      : "Режим: Быстрая дуэль";
+    $("duel-player-name").textContent = "Вы";
+    $("duel-player-rating").textContent = player.rating;
+    $("duel-player-avatar").textContent = initialsFromName(player.name);
+    $("duel-opponent-name").textContent = gameState.opponent.name;
+    $("duel-opponent-rating").textContent = gameState.opponent.rating;
+    $("duel-opponent-avatar").textContent = gameState.opponent.initials;
+
+    $("duel-hint").textContent = gameState.mode === "bot"
+      ? "Тренировочный режим: рейтинг меняется условно, но логика такая же."
+      : "Рейтинговая дуэль: победа приносит больше рейтинга.";
+
+    showQuestion();
+  }
+
+  function showQuestion() {
+    resetTimer();
+    const idx = gameState.currentQuestionIndex;
+    const q = gameState.questions[idx];
+    $("duel-progress-label").textContent = `Вопрос ${idx + 1} / ${gameState.questions.length}`;
+    $("duel-score-label").textContent = `${gameState.playerScore} : ${gameState.opponentScore}`;
+    $("question-text").textContent = q.text;
+    $("question-meta").textContent = `Категория: ${q.category}`;
+    const container = $("answers-container");
+    container.innerHTML = "";
+    gameState.questionAnswered = false;
+
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.className = "answer-btn";
+      btn.dataset.index = String(i);
+
+      const idxSpan = document.createElement("span");
+      idxSpan.className = "index";
+      idxSpan.textContent = String.fromCharCode(65 + i);
+      btn.appendChild(idxSpan);
+
+      const textSpan = document.createElement("span");
+      textSpan.className = "text";
+      textSpan.textContent = opt;
+      btn.appendChild(textSpan);
+
+      btn.addEventListener("click", () => handlePlayerAnswer(i, btn));
+      container.appendChild(btn);
+    });
+
+    const timerFill = $("timer-fill");
+    timerFill.style.transform = "scaleX(1)";
+    const total = gameState.timerTotalMs;
+    const start = performance.now();
+
+    gameState.timerInterval = setInterval(() => {
+      const now = performance.now();
+      const elapsed = now - start;
+      const ratio = Math.max(0, 1 - elapsed / total);
+      timerFill.style.transform = `scaleX(${ratio})`;
+    }, 80);
+
+    gameState.timerTimeout = setTimeout(() => {
+      if (!gameState.questionAnswered) {
+        handlePlayerAnswer(null, null, true);
+      }
+    }, total);
+
+    simulateOpponentAnswer(q);
+  }
+
+  function simulateOpponentAnswer(question) {
+    const baseDelay = 1200;
+    const extra = Math.random() * 2600;
+    const delay = baseDelay + extra;
+    const willAnswerCorrect = Math.random() < 0.7;
+    setTimeout(() => {
+      const idx = gameState.questions.indexOf(question);
+      if (idx === -1 || idx !== gameState.currentQuestionIndex) return;
+      if (!gameState.questionAnswered) {
+        if (willAnswerCorrect) {
+          gameState.opponentScore++;
+        }
+        $("duel-score-label").textContent = `${gameState.playerScore} : ${gameState.opponentScore}`;
+      }
+    }, delay);
+  }
+
+  function handlePlayerAnswer(optionIndex, btn, isTimeout = false) {
+    if (gameState.questionAnswered) return;
+    gameState.questionAnswered = true;
+    resetTimer();
+
+    const q = gameState.questions[gameState.currentQuestionIndex];
+    const correctIdx = q.correctIndex;
+    const answersButtons = Array.from(document.querySelectorAll("#answers-container .answer-btn"));
+
+    answersButtons.forEach((b) => {
+      b.classList.add("disabled");
+      const idx = parseInt(b.dataset.index, 10);
+      if (idx === correctIdx) {
+        b.classList.add("correct");
+      }
+    });
+
+    let playerCorrect = false;
+
+    if (optionIndex !== null && optionIndex === correctIdx) {
+      playerCorrect = true;
+      gameState.playerScore++;
+      if (btn) btn.classList.add("correct");
+    } else if (optionIndex !== null && optionIndex !== correctIdx) {
+      if (btn) btn.classList.add("wrong");
+    }
+
+    $("duel-score-label").textContent = `${gameState.playerScore} : ${gameState.opponentScore}`;
+
+    if (playerCorrect) {
+      if (q.category.includes("Безопас")) {
+        player.stats.safetyCorrect++;
+      } else if (q.category.includes("Эколог")) {
+        player.stats.ecoCorrect++;
+      } else if (q.category.includes("Инновац")) {
+        player.stats.innovationCorrect++;
+      }
+    }
+
+    setTimeout(() => {
+      gameState.currentQuestionIndex++;
+      if (gameState.currentQuestionIndex >= gameState.questions.length) {
+        finishDuel();
+      } else {
+        showQuestion();
+      }
+    }, 900);
+  }
+
+  function finishDuel() {
+    resetTimer();
+    const playerScore = gameState.playerScore;
+    const opponentScore = gameState.opponentScore;
+    const mode = gameState.mode;
+
+    let statusText = "";
+    let deltaRating = 0;
+
+    player.battles++;
+
+    if (playerScore > opponentScore) {
+      statusText = "Победа 🎉";
+      player.wins++;
+      deltaRating = mode === "quick" ? 15 : 5;
+    } else if (playerScore < opponentScore) {
+      statusText = "Поражение — но опыт есть 💪";
+      player.losses++;
+      deltaRating = mode === "quick" ? 5 : 3;
+    } else {
+      statusText = "Ничья 🤝";
+      player.draws++;
+      deltaRating = mode === "quick" ? 10 : 4;
+    }
+
+    player.rating += deltaRating;
+    if (player.rating < 0) player.rating = 0;
+
+    updateBadgesFromPlayer();
+
+    $("result-score").textContent = `${playerScore} : ${opponentScore}`;
+    $("result-status-label").textContent = statusText;
+    $("result-delta-label").textContent = `Рейтинг: ${deltaRating >= 0 ? "+" : ""}${deltaRating} · Дуэлей: +1`;
+    $("result-rating-value").textContent = player.rating;
+    $("result-battles-value").textContent = player.battles;
+    $("result-wl-value").textContent = `${player.wins} / ${player.losses} / ${player.draws}`;
+
+    $("result-mode-pill").textContent = mode === "quick" ? "Быстрая дуэль" : "Тренировка";
+    $("result-subtitle").textContent =
+      mode === "quick"
+        ? "Эта дуэль учитывается в рейтинге. Проверьте своё место во вкладке “Рейтинг участников”."
+        : "Тренировочный режим: рейтинг растёт мягче, но опыт тот же.";
+
+    switchScreen("screen-result");
+  }
+
+  function init() {
+    updateMainScreen();
+
+    $("btn-demo-name").addEventListener("click", () => {
+      $("input-name").value = "Иван Петров";
+    });
+
+    $("btn-enter").addEventListener("click", () => {
+      const name = $("input-name").value.trim() || "Сотрудник СИБУР";
+      player.name = name;
+      updateMainScreen();
+      switchScreen("screen-main");
+    });
+
+    $("btn-play-quick").addEventListener("click", () => {
+      prepareDuel("quick");
+      switchScreen("screen-duel");
+    });
+
+    $("btn-play-bot").addEventListener("click", () => {
+      prepareDuel("bot");
+      switchScreen("screen-duel");
+    });
+
+    $("menu-badges").addEventListener("click", () => {
+      renderBadges();
+      switchScreen("screen-badges");
+    });
+
+    $("menu-leaderboard").addEventListener("click", () => {
+      renderLeaderboard();
+      switchScreen("screen-leaderboard");
+    });
+
+    $("btn-duel-exit").addEventListener("click", () => {
+      resetTimer();
+      updateMainScreen();
+      switchScreen("screen-main");
+    });
+
+    $("btn-duel-skip").addEventListener("click", () => {
+      resetTimer();
+      finishDuel();
+    });
+
+    $("btn-result-again").addEventListener("click", () => {
+      updateMainScreen();
+      prepareDuel("quick");
+      switchScreen("screen-duel");
+    });
+
+    $("btn-result-main").addEventListener("click", () => {
+      updateMainScreen();
+      switchScreen("screen-main");
+    });
+
+    $("btn-badges-back").addEventListener("click", () => {
+      updateMainScreen();
+      switchScreen("screen-main");
+    });
+
+    $("btn-leaderboard-back").addEventListener("click", () => {
+      updateMainScreen();
+      switchScreen("screen-main");
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>

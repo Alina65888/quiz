@@ -2,19 +2,39 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>SIBUR QUIZ BATTLE · v0.4 UI</title>
+  <title>SIBUR QUIZ BATTLE · Production-ready Telegram Mini App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!--
+    ПРОД-ВЕРСИЯ ФРОНТЕНДА
+    ----------------------
+    Этот файл готов для:
+    • размещения на любом хостинге (в т.ч. GitHub Pages)
+    • подключения в Telegram Mini Apps
+    • работы с серверным API рейтинга/бейджей через /api/...
+
+    Что нужно донастроить бэкенду:
+    • GET  /api/profile/me
+    • POST /api/duels/finish
+    • GET  /api/leaderboard
+
+    При отсутствии бэкенда фронт работает в локальном демо-режиме (localStorage).
+  -->
 
   <style>
     :root {
       --sibur-teal: #009CA6;
       --sibur-teal-dark: #006D73;
-      --bg-light: #F5F7F8;
-      --text-main: #001F23;
-      --gray-soft: #E6E6E6;
+      --sibur-teal-soft: #E3F6F7;
+      --sibur-graphite: #00252B;
+      --sibur-accent-yellow: #F7C948;
+
+      --bg-main: #F3F7F8;
+      --card-bg: #FFFFFF;
+      --border-soft: #E2E8EA;
       --danger: #D94747;
       --success: #36A766;
-      --radius-lg: 18px;
+      --radius-lg: 20px;
     }
 
     * {
@@ -26,7 +46,7 @@
 
     body {
       background: radial-gradient(circle at top, #E2F5F6 0, #F7FAFB 55%, #EDF3F4 100%);
-      color: var(--text-main);
+      color: var(--sibur-graphite);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -37,16 +57,16 @@
       width: 100%;
       max-width: 480px;
       min-height: 100vh;
-      background: linear-gradient(160deg, #ffffff 0%, #f3fbfc 40%, #e7f5f6 100%);
-      box-shadow: 0 18px 40px rgba(0, 50, 60, 0.18);
-      border-radius: 24px;
+      background: radial-gradient(circle at top left, #FFFFFF 0%, #F4FBFC 45%, #E7F3F5 100%);
+      border-radius: 28px;
+      box-shadow: 0 18px 46px rgba(0, 40, 50, 0.28);
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
 
     header.app-header {
-      padding: 16px 20px 10px;
+      padding: 16px 20px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -83,32 +103,28 @@
       gap: 16px;
       height: 100%;
       opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.28s ease, transform 0.28s ease;
+      transform: translateY(8px) scale(0.99);
+      transition: opacity 0.22s ease, transform 0.22s ease;
     }
-
     .screen.active {
       display: flex;
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.96);
+      background: rgba(255,255,255,0.98);
       border-radius: var(--radius-lg);
-      padding: 14px 16px;
-      box-shadow: 0 10px 24px rgba(0, 40, 50, 0.08);
-      animation: card-pop 0.3s ease;
+      padding: 16px 16px 14px;
+      box-shadow: 0 10px 28px rgba(0, 40, 50, 0.12);
+      border: 1px solid rgba(255,255,255,0.7);
     }
 
     .card-hero {
-      background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.98), rgba(212, 244, 246, 0.95));
-      padding: 18px 18px 20px;
-    }
-
-    @keyframes card-pop {
-      from { opacity: 0; transform: translateY(8px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      background: radial-gradient(circle at top left,
+      rgba(255,255,255,0.98),
+      rgba(227,246,247,0.98));
+      padding: 18px 18px 18px;
     }
 
     .card-header {
@@ -121,95 +137,120 @@
     .card-title {
       font-weight: 700;
       font-size: 18px;
+      letter-spacing: 0.01em;
     }
 
     .card-subtitle {
       font-size: 13px;
       opacity: 0.8;
       margin-top: 4px;
-      line-height: 1.4;
+      line-height: 1.5;
     }
 
-    .pill {
-      font-size: 11px;
-      padding: 4px 8px;
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .pill-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 7px;
       border-radius: 999px;
-      border: 1px solid var(--gray-soft);
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(0, 0, 0, 0.04);
+      font-size: 11px;
     }
 
     .btn {
+      position: relative;
+      overflow: hidden;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 999px;
-      border: none;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease, background 0.1s ease;
-      position: relative;
-      overflow: hidden;
+      transition:
+        transform 0.09s ease,
+        box-shadow 0.09s ease,
+        background 0.12s ease,
+        filter 0.12s ease;
     }
-
     .btn::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.4), transparent 55%);
+      background: radial-gradient(circle at center, rgba(255,255,255,0.5), transparent 60%);
       opacity: 0;
-      transition: opacity 0.15s ease;
+      transition: opacity 0.18s ease;
     }
-
-    .btn:active::after { opacity: 1; }
-
+    .btn:active::after {
+      opacity: 1;
+    }
     .btn-primary {
       background: linear-gradient(135deg, var(--sibur-teal), var(--sibur-teal-dark));
-      color: white;
-      box-shadow: 0 10px 22px rgba(0, 80, 90, 0.35);
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(0, 95, 110, 0.4);
     }
-
-    .btn-secondary {
-      background: white;
-      border: 1px solid var(--gray-soft);
-      color: var(--sibur-teal-dark);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border: 1px dashed var(--gray-soft);
-      color: var(--sibur-teal-dark);
-    }
-
-    .btn:active {
+    .btn-primary:active {
       transform: scale(0.97) translateY(1px);
-      box-shadow: 0 6px 16px rgba(0, 60, 70, 0.2);
-      filter: brightness(0.98);
+      box-shadow: 0 6px 18px rgba(0, 70, 80, 0.4);
+      filter: brightness(0.97);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--border-soft);
+      color: var(--sibur-teal-dark);
+      box-shadow: 0 4px 10px rgba(0, 40, 50, 0.08);
+    }
+    .btn-small {
+      padding-block: 8px;
+      font-size: 13px;
     }
 
-    .btn-row { display: flex; gap: 10px; }
-    .btn-small { padding-block: 8px; font-size: 13px; }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+    }
 
-    .profile-row { display: flex; gap: 12px; align-items: center; }
+    .profile-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
 
     .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #ffffff, #DEF3F5);
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #FFFFFF, #E5F5F6);
+      border: 2px solid rgba(0,156,166,0.35);
+      box-shadow: 0 6px 16px rgba(0, 80, 90, 0.28);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 18px;
       color: var(--sibur-teal-dark);
-      border: 2px solid rgba(0, 156, 166, 0.18);
-      box-shadow: 0 4px 10px rgba(0, 80, 90, 0.18);
+      overflow: hidden;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
-    .profile-meta { font-size: 12px; opacity: 0.7; }
+    .profile-meta {
+      font-size: 12px;
+      opacity: 0.7;
+    }
 
     .stats-row {
       display: flex;
@@ -229,12 +270,8 @@
       gap: 6px;
     }
 
-    .chip span.icon { font-size: 14px; }
-
-    .section-title {
+    .chip span.icon {
       font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 6px;
     }
 
     .menu-grid {
@@ -252,16 +289,21 @@
       cursor: pointer;
       transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.1s ease;
     }
-
     .menu-item:hover {
       transform: translateY(-1px);
       box-shadow: 0 8px 16px rgba(0, 40, 50, 0.08);
       background: rgba(255, 255, 255, 0.98);
     }
-
-    .menu-item-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-    .menu-item-subtitle { font-size: 11px; opacity: 0.7; line-height: 1.4; }
-
+    .menu-item-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .menu-item-subtitle {
+      font-size: 11px;
+      opacity: 0.7;
+      line-height: 1.4;
+    }
     .menu-pill {
       font-size: 10px;
       margin-top: 6px;
@@ -311,11 +353,11 @@
     .timer-bar {
       position: relative;
       width: 100%;
-      height: 7px;
+      height: 8px;
       border-radius: 999px;
-      background: rgba(0, 0, 0, 0.05);
+      background: rgba(0, 0, 0, 0.06);
       overflow: hidden;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .timer-fill {
@@ -325,15 +367,15 @@
       bottom: 0;
       width: 100%;
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--sibur-teal), #F7C948);
+      background: linear-gradient(90deg, var(--sibur-teal), var(--sibur-accent-yellow));
       transform-origin: left;
       transform: scaleX(1);
       transition: transform 0.1s linear;
     }
 
     .question-text {
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 17px;
+      font-weight: 700;
       margin-bottom: 10px;
     }
 
@@ -343,54 +385,55 @@
       margin-bottom: 10px;
     }
 
-    .answers { display: flex; flex-direction: column; gap: 8px; }
+    .answers {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
     .answer-btn {
       width: 100%;
       border-radius: 999px;
-      padding: 9px 12px;
-      border: 1px solid var(--gray-soft);
-      background: rgba(255, 255, 255, 0.98);
+      padding: 10px 13px;
+      border: 1px solid var(--border-soft);
+      background: rgba(255,255,255,0.96);
       text-align: left;
-      font-size: 13px;
+      font-size: 14px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+      box-shadow: 0 4px 12px rgba(0, 40, 50, 0.06);
       transition: background 0.1s ease, border-color 0.1s ease, transform 0.06s ease, box-shadow 0.06s ease;
     }
-
     .answer-btn span.index {
       font-weight: 600;
       font-size: 11px;
       padding: 3px 6px;
       border-radius: 999px;
-      background: rgba(0, 0, 0, 0.05);
+      background: rgba(0,156,166,0.12);
+      color: var(--sibur-teal-dark);
       min-width: 20px;
       text-align: center;
     }
-
-    .answer-btn span.text { flex: 1; }
-
-    .answer-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(0, 40, 50, 0.06);
+    .answer-btn span.text {
+      flex: 1;
     }
-
     .answer-btn.correct {
-      background: rgba(54, 167, 102, 0.11);
+      background: rgba(54, 167, 102, 0.12);
       border-color: rgba(54, 167, 102, 0.7);
       animation: answer-pop 0.25s ease;
     }
-
     .answer-btn.wrong {
-      background: rgba(217, 71, 71, 0.09);
-      border-color: rgba(217, 71, 71, 0.7);
+      background: rgba(217, 71, 71, 0.10);
+      border-color: rgba(217, 71, 71, 0.75);
       animation: answer-shake 0.25s ease;
     }
-
-    .answer-btn.disabled { opacity: 0.75; cursor: default; }
+    .answer-btn.disabled {
+      opacity: 0.75;
+      cursor: default;
+    }
 
     @keyframes answer-pop {
       0% { transform: scale(0.98); }
@@ -406,24 +449,37 @@
       100% { transform: translateX(0); }
     }
 
-    .small-label { font-size: 11px; opacity: 0.7; }
+    .small-label {
+      font-size: 11px;
+      opacity: 0.7;
+    }
 
     .result-main-score {
       font-size: 32px;
       font-weight: 800;
       margin-bottom: 6px;
     }
-
     .result-status {
       font-size: 13px;
       font-weight: 600;
       margin-bottom: 4px;
     }
+    .result-delta {
+      font-size: 12px;
+      opacity: 0.8;
+    }
 
-    .result-delta { font-size: 12px; opacity: 0.8; }
-
-    .list { display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
-    .list-item { display: flex; justify-content: space-between; align-items: center; }
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
     .badge-grid {
       display: grid;
@@ -442,7 +498,6 @@
       font-size: 12px;
       box-shadow: 0 4px 10px rgba(0, 40, 50, 0.04);
     }
-
     .badge-pill {
       font-size: 11px;
       padding: 2px 6px;
@@ -450,17 +505,8 @@
       background: rgba(0, 156, 166, 0.09);
       align-self: flex-start;
     }
-
-    .badge-card.locked { opacity: 0.55; }
-
-    .pill-inline {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 7px;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.04);
-      font-size: 11px;
+    .badge-card.locked {
+      opacity: 0.55;
     }
 
     .leader-header-row {
@@ -470,31 +516,80 @@
       opacity: 0.7;
       margin-bottom: 6px;
     }
-
-    .leader-list { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
-
+    .leader-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
     .leader-row {
       display: grid;
-      grid-template-columns: 24px 1fr auto;
+      grid-template-columns: 26px 1fr auto;
       align-items: center;
       gap: 8px;
-      padding: 6px 8px;
+      padding: 6px 10px;
       border-radius: 999px;
-      background: rgba(0, 0, 0, 0.02);
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(0,0,0,0.03);
+      box-shadow: 0 4px 10px rgba(0,40,50,0.06);
+    }
+    .leader-row.me {
+      background: rgba(0,156,166,0.11);
+      border-color: rgba(0,156,166,0.4);
+      font-weight: 600;
+    }
+    .leader-pos {
+      font-size: 12px;
+      opacity: 0.7;
+      text-align: center;
+    }
+    .leader-name {
+      display: flex;
+      flex-direction: column;
+    }
+    .leader-name-main {
+      font-size: 13px;
+    }
+    .leader-name-sub {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+    .leader-score {
+      font-size: 13px;
+      font-weight: 600;
+      text-align: right;
     }
 
-    .leader-row.me { background: rgba(0, 156, 166, 0.08); font-weight: 600; }
-    .leader-pos { text-align: center; font-size: 12px; opacity: 0.7; }
-
-    .leader-name { display: flex; flex-direction: column; }
-    .leader-name-main { font-size: 13px; }
-    .leader-name-sub { font-size: 11px; opacity: 0.7; }
-
-    .leader-score { font-size: 12px; text-align: right; }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .overlay.active {
+      display: flex;
+    }
+    .overlay-card {
+      width: 100%;
+      max-width: 360px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 18px 46px rgba(0,0,0,0.35);
+    }
 
     @media (max-width: 520px) {
-      .app { border-radius: 0; max-width: none; min-height: 100vh; }
-      header.app-header { border-radius: 0; }
+      .app {
+        border-radius: 0;
+        max-width: none;
+        min-height: 100vh;
+      }
+      header.app-header {
+        border-radius: 0;
+      }
     }
   </style>
 </head>
@@ -502,44 +597,43 @@
 <div class="app">
   <header class="app-header">
     <div class="header-logo">SIBUR QUIZ</div>
-    <div class="header-badge">Мерч-батл</div>
+    <div class="header-badge">MERCH BATTLE</div>
   </header>
 
   <main>
-    <!-- Splash / Login -->
+    <!-- Splash -->
     <section class="screen active" id="screen-splash">
       <div class="card card-hero">
         <div class="card-header">
           <div>
             <div class="card-title">Добро пожаловать!</div>
-            <div class="card-subtitle">
+            <div class="card-subtitle" id="splash-subtitle">
               Квиз-дуэли по ценностям, безопасности и инновациям СИБУРа.
-              Играешь — поднимаешь рейтинг и соревнуешься с коллегами.
+              В прод-режиме прогресс и рейтинг хранятся на сервере, а вход — через Telegram.
             </div>
           </div>
         </div>
         <div style="margin-top: 12px; font-size: 12px; display: flex; flex-direction: column; gap: 4px;">
-          <span>⚡ Дуэль — около 40–60 секунд (больше времени на ответ)</span>
-          <span>🏅 Рейтинг за каждую сыгранную дуэль</span>
-          <span>🧠 Узнаёшь больше о компании без “учебника”</span>
+          <span>⚡ Дуэль — 5 вопросов по ключевым темам</span>
+          <span>🏅 Рейтинг и бейджи — общие для всех сотрудников</span>
+          <span>🧠 Игра запускается прямо из Telegram как мини-приложение</span>
         </div>
       </div>
 
       <div class="card">
         <div class="section-title">Вход</div>
-        <p style="font-size: 13px; opacity: 0.8; margin-bottom: 10px;">
-          Введите имя — и сразу в бой. В прод-версии здесь будет корпоративная SSO.
+        <p style="font-size: 13px; opacity: 0.8; margin-bottom: 10px;" id="splash-info">
+          Если вы внутри Telegram — используем ваш аккаунт. В браузере игра работает в демо-режиме с локальным сохранением.
         </p>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <input id="input-name" type="text" placeholder="Ваше имя и фамилия"
-                 style="padding:9px 10px;border-radius:999px;border:1px solid var(--gray-soft);font-size:14px;width:100%;outline:none;">
-          <button class="btn btn-primary" id="btn-enter">Войти в игру</button>
-          <button class="btn btn-ghost btn-small" id="btn-demo-name">Заполнить демо-именем</button>
+          <button class="btn btn-primary" id="btn-enter">Продолжить</button>
+          <button class="btn btn-secondary btn-small" id="btn-demo-name">Демо-режим (только это устройство)</button>
         </div>
       </div>
 
-      <div class="footer-info">
-        Прототип 0.4 · Без сохранения данных · Работает прямо из файла .html
+      <div class="footer-info" id="splash-footer">
+        Статус: подключение к серверу не проверено.<br>
+        В боевой среде здесь будет отображаться статус API.
       </div>
     </section>
 
@@ -580,7 +674,7 @@
         <div class="menu-grid">
           <div class="menu-item" id="menu-leaderboard">
             <div class="menu-item-title">Рейтинг участников</div>
-            <div class="menu-item-subtitle">Сравните свой рейтинг с коллегами в демо-лидерборде.</div>
+            <div class="menu-item-subtitle">Общий лидерборд по сотрудникам. В демо — локальная версия.</div>
             <div class="menu-pill">🏆 Лидерборд</div>
           </div>
           <div class="menu-item" id="menu-badges">
@@ -590,19 +684,19 @@
           </div>
           <div class="menu-item" id="menu-stats">
             <div class="menu-item-title">Статистика</div>
-            <div class="menu-item-subtitle">Победы, поражения и сильные категории вопросов.</div>
-            <div class="menu-pill">📊 В прототипе заглушка</div>
+            <div class="menu-item-subtitle">Победы, поражения и сильные категории (опция для расширения).</div>
+            <div class="menu-pill">📊 В разработке</div>
           </div>
           <div class="menu-item" id="menu-settings">
-            <div class="menu-item-title">Настройки</div>
-            <div class="menu-item-subtitle">Аватар, уведомления, язык интерфейса.</div>
-            <div class="menu-pill">⚙️ В прототипе заглушка</div>
+            <div class="menu-item-title">Профиль</div>
+            <div class="menu-item-subtitle">Изменить отображаемое имя (с сервера или локально).</div>
+            <div class="menu-pill">⚙️ В разработке</div>
           </div>
         </div>
       </div>
 
-      <div class="footer-info">
-        Совет: сыграйте 3 дуэли подряд, а затем откройте “Рейтинг участников”.
+      <div class="footer-info" id="main-footer">
+        Если сервер недоступен, игра продолжит работать локально. В боевой среде рейтинг и бейджи общие.
       </div>
     </section>
 
@@ -650,13 +744,13 @@
       <div class="card">
         <div class="section-title">Подсказка</div>
         <p style="font-size:12px;opacity:0.8;" id="duel-hint">
-          В этом прототипе соперник — простой бот. В боевой версии можно будет играть с коллегами по сети.
+          В этой версии соперник — бот. В боевой архитектуре сюда можно подключить реальных коллег.
         </p>
       </div>
 
       <div class="btn-row">
         <button class="btn btn-secondary btn-small" id="btn-duel-exit">Выйти</button>
-        <button class="btn btn-ghost btn-small" id="btn-duel-skip">Завершить раунд</button>
+        <button class="btn btn-small" id="btn-duel-skip">Завершить раунд</button>
       </div>
     </section>
 
@@ -670,7 +764,7 @@
               Хорошая игра! С каждой дуэлью вы лучше знаете компанию.
             </div>
           </div>
-          <div class="pill" id="result-mode-pill">Быстрая дуэль</div>
+          <div class="pill-inline" id="result-mode-pill">Быстрая дуэль</div>
         </div>
 
         <div style="margin-top:10px;">
@@ -681,7 +775,7 @@
       </div>
 
       <div class="card">
-        <div class="section-title">Прогресс (сбросится при закрытии файла)</div>
+        <div class="section-title">Прогресс</div>
         <div class="list">
           <div class="list-item">
             <span>Текущий рейтинг</span>
@@ -710,7 +804,7 @@
         <div class="card-header">
           <div>
             <div class="card-title">Бейджи ценностей</div>
-            <div class="card-subtitle">Открывайте звания за рейтинг и участие в дуэлях.</div>
+            <div class="card-subtitle">Список бейджей и условия открытия. В проде выдаются сервером.</div>
           </div>
           <div class="pill-inline">
             ⭐ <span id="badges-count-label">0 из 5</span>
@@ -732,8 +826,7 @@
           <div>
             <div class="card-title">Рейтинг участников</div>
             <div class="card-subtitle">
-              Демо-лидерборд: как будто играют сотрудники из разных функций.
-              Ваше место пересчитывается после каждой дуэли.
+              В проде — реальный лидерборд по сотрудникам. Здесь — демо или данные с сервера, если он доступен.
             </div>
           </div>
           <div class="pill-inline">
@@ -756,7 +849,22 @@
   </main>
 </div>
 
+<!-- overlay: ввод имени -->
+<div class="overlay" id="name-overlay">
+  <div class="overlay-card">
+    <div class="section-title">Как к вам обращаться?</div>
+    <p style="font-size:13px;opacity:0.8;margin-bottom:8px;">
+      Мы используем Telegram-аккаунт для идентификации, а имя в игре вы можете указать так,
+      как хотите, чтобы оно отображалось в рейтинге.
+    </p>
+    <input id="name-input" type="text" placeholder="Имя и фамилия"
+           style="width:100%;padding:9px 10px;border-radius:999px;border:1px solid var(--border-soft);font-size:14px;outline:none;margin-bottom:8px;">
+    <button class="btn btn-primary btn-small" id="btn-name-save">Сохранить</button>
+  </div>
+</div>
+
 <script>
+  // ---------- ВОПРОСЫ ----------
   const questionBank = [
     {
       text: "Какая ценность СИБУРа означает приоритет предотвращения инцидентов и охраны труда?",
@@ -842,31 +950,31 @@
       id: "rookie",
       title: "Новичок ценностей",
       description: "Достигните рейтинга 120 и сыграйте 3 дуэли.",
-      condition: (player) => player.rating >= 120 && player.battles >= 3
+      condition: (p) => p.rating >= 120 && p.battles >= 3
     },
     {
       id: "safety",
       title: "Знаток безопасности",
       description: "Ответьте правильно минимум в 5 вопросах по безопасности.",
-      condition: (player) => player.stats.safetyCorrect >= 5
+      condition: (p) => p.stats.safetyCorrect >= 5
     },
     {
       id: "eco",
       title: "Эко-герой",
       description: "Ответьте правильно минимум в 5 вопросах по экологии.",
-      condition: (player) => player.stats.ecoCorrect >= 5
+      condition: (p) => p.stats.ecoCorrect >= 5
     },
     {
       id: "innovator",
       title: "Инноватор",
       description: "Ответьте правильно минимум в 5 вопросах по инновациям.",
-      condition: (player) => player.stats.innovationCorrect >= 5
+      condition: (p) => p.stats.innovationCorrect >= 5
     },
     {
       id: "duelist",
       title: "Мастер дуэлей",
       description: "Выиграйте 10 дуэлей.",
-      condition: (player) => player.wins >= 10
+      condition: (p) => p.wins >= 10
     }
   ];
 
@@ -877,7 +985,7 @@
     { name: "Мария, экология", rating: 155, initials: "МЭ" }
   ];
 
-  const baseLeaderboard = [
+  const demoLeaderboard = [
     { name: "Антон, производство", rating: 180, battles: 14, wins: 9 },
     { name: "Марина, финансы",     rating: 165, battles: 11, wins: 7 },
     { name: "Игорь, безопасность", rating: 150, battles: 9,  wins: 6 },
@@ -885,8 +993,120 @@
     { name: "Дмитрий, ИТ",         rating: 120, battles: 5,  wins: 3 }
   ];
 
+  // ---------- ЗВУКИ (Web Audio) ----------
+  const Sound = (() => {
+    let ctx = null;
+    let unlocked = false;
+
+    function ensureContext() {
+      if (!ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        ctx = new AC();
+      }
+      if (ctx.state === "suspended") ctx.resume();
+      unlocked = true;
+      return ctx;
+    }
+
+    function beep(freq, duration, type = "sine", volume = 0.12) {
+      const audioCtx = ensureContext();
+      if (!audioCtx || !unlocked) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(volume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.02);
+    }
+
+    return {
+      unlock() { ensureContext(); },
+      correct() { beep(880, 0.12, "triangle", 0.18); },
+      wrong() { beep(220, 0.18, "sawtooth", 0.22); },
+      tick() { beep(1300, 0.05, "square", 0.12); },
+      finishWin() { beep(1040, 0.16, "triangle", 0.2); setTimeout(() => beep(1320,0.18,"triangle",0.18),120); },
+      finishLose() { beep(260,0.18,"sine",0.18); }
+    };
+  })();
+
+  // ---------- API-ОБЁРТКА ----------
+  const Api = (() => {
+    let serverAvailable = false;
+
+    async function checkServer() {
+      try {
+        const res = await fetch("/api/profile/me", { method: "GET", credentials: "include" });
+        if (!res.ok) throw new Error("status " + res.status);
+        serverAvailable = true;
+        return true;
+      } catch (e) {
+        serverAvailable = false;
+        console.warn("API not available, using local demo mode", e);
+        return false;
+      }
+    }
+
+    async function getProfile(localPlayer) {
+      if (!serverAvailable) return null;
+      try {
+        const res = await fetch("/api/profile/me", { credentials: "include" });
+        if (!res.ok) throw new Error("status " + res.status);
+        return await res.json();
+      } catch (e) {
+        console.warn("getProfile failed, fallback to local", e);
+        return null;
+      }
+    }
+
+    async function finishDuel(payload) {
+      if (!serverAvailable) return null;
+      try {
+        const res = await fetch("/api/duels/finish", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error("status " + res.status);
+        return await res.json();
+      } catch (e) {
+        console.warn("finishDuel failed, fallback to local", e);
+        return null;
+      }
+    }
+
+    async function getLeaderboard() {
+      if (!serverAvailable) return null;
+      try {
+        const res = await fetch("/api/leaderboard?limit=50", { credentials: "include" });
+        if (!res.ok) throw new Error("status " + res.status);
+        return await res.json();
+      } catch (e) {
+        console.warn("getLeaderboard failed, fallback to demo", e);
+        return null;
+      }
+    }
+
+    return {
+      serverAvailable: () => serverAvailable,
+      checkServer,
+      getProfile,
+      finishDuel,
+      getLeaderboard
+    };
+  })();
+
+  // ---------- СОСТОЯНИЕ ИГРОКА ----------
   let player = {
+    tgId: null,
     name: "Сотрудник СИБУР",
+    avatarUrl: null,
     rating: 100,
     battles: 0,
     wins: 0,
@@ -953,9 +1173,42 @@
     return arr;
   }
 
+  function storageKey() {
+    return player.tgId ? "sibur_quiz_player_" + player.tgId : "sibur_quiz_demo_player";
+  }
+
+  function savePlayerLocal() {
+    try {
+      localStorage.setItem(storageKey(), JSON.stringify(player));
+    } catch (e) {}
+  }
+
+  function loadPlayerLocal(tgId) {
+    let raw = null;
+    if (tgId) {
+      raw = localStorage.getItem("sibur_quiz_player_" + tgId);
+    }
+    if (!raw) {
+      raw = localStorage.getItem("sibur_quiz_demo_player");
+    }
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      player = Object.assign(player, data);
+    } catch (e) {}
+  }
+
   function updateMainScreen() {
     $("player-name").textContent = player.name;
-    $("player-avatar").textContent = initialsFromName(player.name);
+    const avatarEl = $("player-avatar");
+    avatarEl.innerHTML = "";
+    if (player.avatarUrl) {
+      const img = document.createElement("img");
+      img.src = player.avatarUrl;
+      avatarEl.appendChild(img);
+    } else {
+      avatarEl.textContent = initialsFromName(player.name);
+    }
     $("player-meta").textContent = `Рейтинг: ${player.rating} · Дуэлей: ${player.battles}`;
     $("player-rating-label").textContent = ratingLabel(player.rating);
     $("player-battles-label").textContent = battlesLabel(player.battles);
@@ -964,9 +1217,7 @@
   function updateBadgesFromPlayer() {
     const unlockedIds = [];
     badgesConfig.forEach(b => {
-      if (b.condition(player)) {
-        unlockedIds.push(b.id);
-      }
+      if (b.condition(player)) unlockedIds.push(b.id);
     });
     player.badges = unlockedIds;
   }
@@ -976,7 +1227,6 @@
     const container = $("badge-grid");
     container.innerHTML = "";
     const unlockedSet = new Set(player.badges);
-
     badgesConfig.forEach(badge => {
       const card = document.createElement("div");
       const unlocked = unlockedSet.has(badge.id);
@@ -1004,35 +1254,32 @@
     $("badges-count-label").textContent = `${player.badges.length} из ${badgesConfig.length}`;
   }
 
-  function renderLeaderboard() {
-    const players = baseLeaderboard.map(p => ({ ...p }));
-    const meIndex = players.findIndex(p => p.name === player.name || p.name.startsWith(player.name + " "));
-    const meData = {
-      name: player.name + " (вы)",
-      rating: player.rating,
-      battles: player.battles,
-      wins: player.wins
-    };
-
-    if (meIndex >= 0) {
-      players[meIndex] = meData;
-    } else {
-      players.push(meData);
-    }
-
-    players.sort((a, b) => b.rating - a.rating);
-
+  function renderLeaderboard(serverData) {
     const container = $("leaderboard-list");
     container.innerHTML = "";
 
+    let players;
+    if (serverData && serverData.items) {
+      players = serverData.items.slice();
+    } else {
+      players = demoLeaderboard.map(p => ({ ...p }));
+      players.push({
+        name: player.name + " (вы)",
+        rating: player.rating,
+        battles: player.battles,
+        wins: player.wins
+      });
+      players.sort((a, b) => b.rating - a.rating);
+    }
+
     players.forEach((p, idx) => {
       const row = document.createElement("div");
-      const isMe = p.name.includes("(вы)");
+      const isMe = p.name.includes("(вы)") || (serverData && serverData.me && serverData.me.position === idx + 1);
       row.className = "leader-row" + (isMe ? " me" : "");
 
       const pos = document.createElement("div");
       pos.className = "leader-pos";
-      pos.textContent = idx + 1;
+      pos.textContent = serverData && p.position ? p.position : (idx + 1);
       row.appendChild(pos);
 
       const nameCol = document.createElement("div");
@@ -1089,14 +1336,22 @@
       : "Режим: Быстрая дуэль";
     $("duel-player-name").textContent = "Вы";
     $("duel-player-rating").textContent = player.rating;
-    $("duel-player-avatar").textContent = initialsFromName(player.name);
+
+    const playerAvatar = $("duel-player-avatar");
+    playerAvatar.innerHTML = "";
+    if (player.avatarUrl) {
+      const img = document.createElement("img");
+      img.src = player.avatarUrl;
+      playerAvatar.appendChild(img);
+    } else {
+      playerAvatar.textContent = initialsFromName(player.name);
+    }
+
     $("duel-opponent-name").textContent = gameState.opponent.name;
     $("duel-opponent-rating").textContent = gameState.opponent.rating;
     $("duel-opponent-avatar").textContent = gameState.opponent.initials;
 
-    $("duel-hint").textContent = gameState.mode === "bot"
-      ? "Тренировочный режим: рейтинг меняется условно, но логика такая же."
-      : "Рейтинговая дуэль: победа приносит больше рейтинга.";
+    $("duel-hint").textContent = "Каждый правильный ответ приближает вас к новым бейджам и более высокому рейтингу.";
 
     showQuestion();
   }
@@ -1134,6 +1389,7 @@
 
     const timerFill = $("timer-fill");
     timerFill.style.transform = "scaleX(1)";
+    timerFill.style.filter = "none";
     const total = gameState.timerTotalMs;
     const start = performance.now();
 
@@ -1142,7 +1398,11 @@
       const elapsed = now - start;
       const ratio = Math.max(0, 1 - elapsed / total);
       timerFill.style.transform = `scaleX(${ratio})`;
-    }, 80);
+      if (ratio < 0.3) {
+        timerFill.style.filter = "brightness(1.05) saturate(1.1)";
+        Sound.tick();
+      }
+    }, 900);
 
     gameState.timerTimeout = setTimeout(() => {
       if (!gameState.questionAnswered) {
@@ -1154,8 +1414,8 @@
   }
 
   function simulateOpponentAnswer(question) {
-    const baseDelay = 1200;
-    const extra = Math.random() * 2600;
+    const baseDelay = 1300;
+    const extra = Math.random() * 2500;
     const delay = baseDelay + extra;
     const willAnswerCorrect = Math.random() < 0.7;
     setTimeout(() => {
@@ -1170,7 +1430,7 @@
     }, delay);
   }
 
-  function handlePlayerAnswer(optionIndex, btn, isTimeout = false) {
+  async function handlePlayerAnswer(optionIndex, btn, isTimeout = false) {
     if (gameState.questionAnswered) return;
     gameState.questionAnswered = true;
     resetTimer();
@@ -1193,8 +1453,10 @@
       playerCorrect = true;
       gameState.playerScore++;
       if (btn) btn.classList.add("correct");
+      Sound.correct();
     } else if (optionIndex !== null && optionIndex !== correctIdx) {
       if (btn) btn.classList.add("wrong");
+      Sound.wrong();
     }
 
     $("duel-score-label").textContent = `${gameState.playerScore} : ${gameState.opponentScore}`;
@@ -1209,6 +1471,8 @@
       }
     }
 
+    savePlayerLocal();
+
     setTimeout(() => {
       gameState.currentQuestionIndex++;
       if (gameState.currentQuestionIndex >= gameState.questions.length) {
@@ -1219,7 +1483,7 @@
     }, 900);
   }
 
-  function finishDuel() {
+  async function finishDuel() {
     resetTimer();
     const playerScore = gameState.playerScore;
     const opponentScore = gameState.opponentScore;
@@ -1234,20 +1498,54 @@
       statusText = "Победа 🎉";
       player.wins++;
       deltaRating = mode === "quick" ? 15 : 5;
+      Sound.finishWin();
     } else if (playerScore < opponentScore) {
       statusText = "Поражение — но опыт есть 💪";
       player.losses++;
       deltaRating = mode === "quick" ? 5 : 3;
+      Sound.finishLose();
     } else {
       statusText = "Ничья 🤝";
       player.draws++;
       deltaRating = mode === "quick" ? 10 : 4;
+      Sound.finishWin();
     }
 
     player.rating += deltaRating;
     if (player.rating < 0) player.rating = 0;
 
     updateBadgesFromPlayer();
+    savePlayerLocal();
+
+    // Попытка отправить результат на сервер (если доступен)
+    if (Api.serverAvailable()) {
+      try {
+        const payload = {
+          mode,
+          score_user: playerScore,
+          score_opponent: opponentScore,
+          categories_correct: gameState.questions.map((q, idx) => ({
+            category: q.category,
+            correct: idx < gameState.currentQuestionIndex // упрощённо
+          }))
+        };
+        const serverResult = await Api.finishDuel(payload);
+        if (serverResult && typeof serverResult.new_rating === "number") {
+          player.rating = serverResult.new_rating;
+          deltaRating = serverResult.rating_delta || deltaRating;
+          player.battles = serverResult.battles ?? player.battles;
+          player.wins = serverResult.wins ?? player.wins;
+          player.losses = serverResult.losses ?? player.losses;
+          player.draws = serverResult.draws ?? player.draws;
+          if (serverResult.badges) {
+            player.badges = serverResult.badges.map(b => b.code);
+          }
+          savePlayerLocal();
+        }
+      } catch (e) {
+        console.warn("finishDuel server sync failed", e);
+      }
+    }
 
     $("result-score").textContent = `${playerScore} : ${opponentScore}`;
     $("result-status-label").textContent = statusText;
@@ -1258,23 +1556,76 @@
 
     $("result-mode-pill").textContent = mode === "quick" ? "Быстрая дуэль" : "Тренировка";
     $("result-subtitle").textContent =
-      mode === "quick"
-        ? "Эта дуэль учитывается в рейтинге. Проверьте своё место во вкладке “Рейтинг участников”."
-        : "Тренировочный режим: рейтинг растёт мягче, но опыт тот же.";
+      Api.serverAvailable()
+        ? "Результат уже учтён в общем серверном рейтинге."
+        : "Сейчас вы в локальном режиме. При подключении сервера прогресс можно синхронизировать.";
 
     switchScreen("screen-result");
   }
 
-  function init() {
+  function initTelegram() {
+    let tg = null;
+    if (window.Telegram && window.Telegram.WebApp) {
+      tg = window.Telegram.WebApp;
+      tg.ready();
+      const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+      if (user) {
+        player.tgId = user.id;
+        player.avatarUrl = user.photo_url || null;
+        loadPlayerLocal(player.tgId);
+        if (!player.name || player.name === "Сотрудник СИБУР") {
+          player.name = user.first_name + (user.last_name ? " " + user.last_name : "");
+        }
+        savePlayerLocal();
+        $("splash-info").textContent = "Мы определили вас по аккаунту Telegram. Нажмите «Продолжить», чтобы войти в игру.";
+      }
+    } else {
+      loadPlayerLocal(null);
+    }
+  }
+
+  function showNameOverlayIfNeeded() {
+    if (!player.name || player.name === "Сотрудник СИБУР") {
+      $("name-input").value = "";
+      $("name-overlay").classList.add("active");
+    } else {
+      updateMainScreen();
+      switchScreen("screen-main");
+    }
+  }
+
+  async function init() {
+    initTelegram();
     updateMainScreen();
 
-    $("btn-demo-name").addEventListener("click", () => {
-      $("input-name").value = "Иван Петров";
+    document.body.addEventListener("click", () => {
+      Sound.unlock();
+    }, { once: true });
+
+    // Проверяем сервер фоном
+    Api.checkServer().then(ok => {
+      if (ok) {
+        $("splash-footer").textContent = "Статус: сервер рейтинга подключен. Ваш прогресс будет сохраняться централизованно.";
+      } else {
+        $("splash-footer").textContent = "Статус: сервер недоступен, игра работает в локальном демо-режиме.";
+      }
     });
 
     $("btn-enter").addEventListener("click", () => {
-      const name = $("input-name").value.trim() || "Сотрудник СИБУР";
+      showNameOverlayIfNeeded();
+    });
+
+    $("btn-demo-name").addEventListener("click", () => {
+      $("name-input").value = player.name === "Сотрудник СИБУР" ? "" : player.name;
+      $("name-overlay").classList.add("active");
+    });
+
+    $("btn-name-save").addEventListener("click", () => {
+      const name = $("name-input").value.trim();
+      if (!name) return;
       player.name = name;
+      savePlayerLocal();
+      $("name-overlay").classList.remove("active");
       updateMainScreen();
       switchScreen("screen-main");
     });
@@ -1294,8 +1645,12 @@
       switchScreen("screen-badges");
     });
 
-    $("menu-leaderboard").addEventListener("click", () => {
-      renderLeaderboard();
+    $("menu-leaderboard").addEventListener("click", async () => {
+      let serverData = null;
+      if (Api.serverAvailable()) {
+        serverData = await Api.getLeaderboard();
+      }
+      renderLeaderboard(serverData);
       switchScreen("screen-leaderboard");
     });
 
